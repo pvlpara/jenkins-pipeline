@@ -1,51 +1,65 @@
-pipeline{
+pipeline {
     agent any
     environment{
-        NAME="Parami"
+        ERRORS="0"
+        SCAN="COMPLETED"
     }
-    stages{
-        stage('Build'){
-            steps{
-                echo "Build started and completed"
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building the code using maven...'
+                echo 'mvn clean package'
             }
         }
-        stage('Unit and Integration Tests'){
-            steps{
-                echo "unit and integration tests started and completed"
+        stage('Unit and Integration Tests') {
+            steps {
+                echo 'Running unit and integration tests...'
+                echo 'using maven to test..'
+                echo 'mvn test'
             }
         }
-        stage('Code analysis'){
-            steps{
-                echo "code analysis started and completed"
+        stage('Code Analysis') {
+            steps {
+                echo 'Analyzing code using SonarQube ...'
+                echo 'mvn sonar:sonar'
             }
         }
-        stage('Security scan'){
-            steps{
-                echo "Test started and completed"
+        stage('Security Scan') {
+            steps {
+                echo 'Running security scan using OWASP Dependency-Check and maven...'
+                echo 'mvn org.owasp:dependency-check-maven:check'
             }
             post{
                 success{
                     mail to:"pvlpara@gmail.com",
                     subject: "Security scan",
-                    body:"Security scan completed"
+                    body:"Security scan $SCAN"
                 }
            }
         }
-        stage('Test'){
-            steps{
-                echo "Test started and completed"
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Deploying to staging using docker...'
+                echo 'docker-compose -f docker-compose-staging.yml up -d'
+            }
+        }
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Running integration tests on staging...'
+                echo 'Running the integration tests in the Postman collection using Newman'
             }
             post{
                 success{
                     mail to:"pvlpara@gmail.com",
-                    subject: "Test started and completed",
-                    body:"Hello world"
+                    subject: "Testing on staging",
+                    body:"Test completed with $ERRORS errors"
                 }
            }
         }
-        stage('Deploy'){
-            steps{
-                echo "$NAME, Deployment started and completed"
+        stage('Deploy to Production') {
+            steps {
+                echo 'Deploying to a production server - AWS EC2...'
+                echo 'using docker to deploy to server'
             }
         }
     }

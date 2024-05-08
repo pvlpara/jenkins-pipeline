@@ -1,0 +1,52 @@
+pipeline{
+    agent any
+    environment{
+        NAME="Parami"
+    }
+    stages{
+        stage('Build'){
+            steps{
+                echo "Build started and completed"
+            }
+        }
+        stage('Unit and Integration Tests'){
+            steps{
+                echo "unit and integration tests started and completed"
+            }
+        }
+        stage('Code analysis'){
+            steps{
+                echo "code analysis started and completed"
+            }
+        }
+        stage('Security scan'){
+            steps{
+                echo "Test started and completed"
+            }
+            post{
+                success{
+                    mail to:"pvlpara@gmail.com",
+                    subject: "Security scan",
+                    body:"Security scan completed"
+                }
+           }
+        }
+        stage('Test'){
+            steps{
+                echo "Test started and completed"
+            }
+            post{
+                success{
+                    mail to:"pvlpara@gmail.com",
+                    subject: "Test started and completed",
+                    body:"Hello world"
+                }
+           }
+        }
+        stage('Deploy'){
+            steps{
+                echo "$NAME, Deployment started and completed"
+            }
+        }
+    }
+}
